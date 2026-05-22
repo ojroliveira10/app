@@ -1,36 +1,96 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# FinançasPessoais
 
-## Getting Started
+App de gestão financeira pessoal com Next.js, Supabase e shadcn/ui.
 
-First, run the development server:
+## Stack
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **Next.js 15** (App Router) + TypeScript
+- **Tailwind CSS** + **shadcn/ui**
+- **Supabase** (Auth + PostgreSQL + RLS)
+- **Recharts** (gráficos)
+- **date-fns** (formatação de datas)
+
+## Funcionalidades
+
+- Autenticação via Supabase Auth (email/senha)
+- Cadastro de receitas e despesas com categoria, data e descrição
+- Dashboard com resumo mensal (receitas, despesas, saldo)
+- Gráfico de despesas por categoria (Pie Chart)
+- Lista de transações recentes
+- Filtros por mês, ano, tipo e categoria
+- Editar e excluir transações
+- Row Level Security — cada usuário só vê seus dados
+- Responsivo (mobile-first)
+
+## Configuração
+
+### 1. Crie um projeto no Supabase
+
+Acesse [supabase.com](https://supabase.com), crie um projeto e copie:
+- Project URL
+- Anon public key
+
+### 2. Execute a migração SQL
+
+No **SQL Editor** do Supabase, execute o arquivo:
+
+```
+supabase/migration.sql
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 3. Configure as variáveis de ambiente
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+cp .env.local.example .env.local
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Edite `.env.local`:
 
-## Learn More
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGc...
+```
 
-To learn more about Next.js, take a look at the following resources:
+### 4. Instale e rode
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm install
+npm run dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Acesse: http://localhost:3000
 
-## Deploy on Vercel
+## Deploy na Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Suba o código para um repositório GitHub
+2. Importe o projeto na Vercel
+3. Adicione as variáveis de ambiente no painel da Vercel
+4. Deploy automático a cada push
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Estrutura
+
+```
+app/
+├── (auth)/login        # Página de login
+├── (auth)/register     # Página de cadastro
+└── (dashboard)/        # Páginas autenticadas
+    ├── page.tsx        # Dashboard
+    └── transactions/   # Transações
+
+components/
+├── auth/               # LoginForm, RegisterForm
+├── dashboard/          # SummaryCards, CategoryChart, RecentTransactions
+├── transactions/       # TransactionForm, TransactionList, TransactionFilters
+└── layout/             # Sidebar, MobileNav
+
+lib/
+├── supabase/           # client.ts e server.ts
+├── constants.ts        # Categorias e cores
+└── format.ts           # Formatação de moeda e data
+
+hooks/
+└── useTransactions.ts  # Hook principal com CRUD e filtros
+
+supabase/
+└── migration.sql       # Schema do banco com RLS
+```
