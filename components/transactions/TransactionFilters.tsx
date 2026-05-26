@@ -16,15 +16,23 @@ interface TransactionFiltersProps {
   onChange: (filters: Partial<TransactionFilters>) => void
 }
 
+const TYPE_LABELS: Record<string, string> = {
+  all: 'Todos',
+  income: 'Receitas',
+  expense: 'Despesas',
+}
+
 export function TransactionFiltersBar({ filters, onChange }: TransactionFiltersProps) {
   const years = getAvailableYears()
-  const allCategories = ['all', ...INCOME_CATEGORIES, ...EXPENSE_CATEGORIES]
+  const allCategories = [...new Set([...INCOME_CATEGORIES, ...EXPENSE_CATEGORIES])]
+  const monthLabel = MONTHS.find((m) => m.value === filters.month)?.label ?? 'Mês'
+  const categoryLabel = filters.category === 'all' ? 'Todas' : (filters.category || 'Categoria')
 
   return (
     <div className="flex flex-wrap items-center gap-2">
       <Select value={filters.month} onValueChange={(month) => { if (month) onChange({ month }) }}>
         <SelectTrigger className="w-32">
-          <SelectValue placeholder="Mês" />
+          <SelectValue>{monthLabel}</SelectValue>
         </SelectTrigger>
         <SelectContent>
           {MONTHS.map((m) => (
@@ -35,7 +43,7 @@ export function TransactionFiltersBar({ filters, onChange }: TransactionFiltersP
 
       <Select value={filters.year} onValueChange={(year) => { if (year) onChange({ year }) }}>
         <SelectTrigger className="w-24">
-          <SelectValue placeholder="Ano" />
+          <SelectValue>{filters.year}</SelectValue>
         </SelectTrigger>
         <SelectContent>
           {years.map((y) => (
@@ -46,7 +54,7 @@ export function TransactionFiltersBar({ filters, onChange }: TransactionFiltersP
 
       <Select value={filters.type} onValueChange={(type) => { if (type) onChange({ type: type as TransactionFilters['type'] }) }}>
         <SelectTrigger className="w-32">
-          <SelectValue placeholder="Tipo" />
+          <SelectValue>{TYPE_LABELS[filters.type] ?? 'Tipo'}</SelectValue>
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">Todos</SelectItem>
@@ -57,11 +65,11 @@ export function TransactionFiltersBar({ filters, onChange }: TransactionFiltersP
 
       <Select value={filters.category} onValueChange={(category) => { if (category) onChange({ category }) }}>
         <SelectTrigger className="w-40">
-          <SelectValue placeholder="Categoria" />
+          <SelectValue>{categoryLabel}</SelectValue>
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">Todas</SelectItem>
-          {allCategories.filter(c => c !== 'all').map((c) => (
+          {allCategories.map((c) => (
             <SelectItem key={c} value={c}>{c}</SelectItem>
           ))}
         </SelectContent>

@@ -1,3 +1,5 @@
+import type { ScoreLevel, Achievement } from '@/types'
+
 export const INCOME_CATEGORIES = [
   'Salário',
   'Freelance',
@@ -21,13 +23,11 @@ export const EXPENSE_CATEGORIES = [
 ] as const
 
 export const CATEGORY_COLORS: Record<string, string> = {
-  // Income
   Salário: '#22c55e',
   Freelance: '#16a34a',
   Investimentos: '#15803d',
   'Aluguel Recebido': '#166534',
   Presente: '#4ade80',
-  // Expense
   Alimentação: '#ef4444',
   Moradia: '#f97316',
   Transporte: '#eab308',
@@ -54,3 +54,193 @@ export const MONTHS = [
   { value: '11', label: 'Novembro' },
   { value: '12', label: 'Dezembro' },
 ]
+
+export const SCORE_LEVELS: ScoreLevel[] = [
+  { label: 'Iniciante', min: 0, max: 199, color: '#94a3b8', emoji: '🌱', description: 'Começando sua jornada financeira' },
+  { label: 'Aprendiz', min: 200, max: 399, color: '#f59e0b', emoji: '📚', description: 'Desenvolvendo bons hábitos' },
+  { label: 'Intermediário', min: 400, max: 599, color: '#22c55e', emoji: '💡', description: 'Controle financeiro em evolução' },
+  { label: 'Avançado', min: 600, max: 799, color: '#8b5cf6', emoji: '🚀', description: 'Finanças bem organizadas' },
+  { label: 'Expert', min: 800, max: 899, color: '#06b6d4', emoji: '⭐', description: 'Domínio financeiro elevado' },
+  { label: 'Elite', min: 900, max: 1000, color: '#f59e0b', emoji: '💎', description: 'Excelência financeira total' },
+]
+
+export const ACHIEVEMENTS: Achievement[] = [
+  {
+    id: 'first_transaction',
+    title: 'Primeiro Passo',
+    description: 'Registre sua primeira transação',
+    emoji: '🎯',
+    unlocked: false,
+    category: 'consistency',
+    xp: 50,
+    requirement: '1 transação registrada',
+  },
+  {
+    id: 'ten_transactions',
+    title: 'Comprometido',
+    description: 'Registre 10 transações',
+    emoji: '📊',
+    unlocked: false,
+    category: 'consistency',
+    xp: 100,
+    requirement: '10 transações',
+  },
+  {
+    id: 'fifty_transactions',
+    title: 'Analítico',
+    description: 'Registre 50 transações',
+    emoji: '🔍',
+    unlocked: false,
+    category: 'consistency',
+    xp: 250,
+    requirement: '50 transações',
+  },
+  {
+    id: 'positive_balance',
+    title: 'Poupador',
+    description: 'Termine um mês com saldo positivo',
+    emoji: '💰',
+    unlocked: false,
+    category: 'savings',
+    xp: 150,
+    requirement: 'Saldo positivo no mês',
+  },
+  {
+    id: 'savings_20',
+    title: 'Investidor Nato',
+    description: 'Poupe mais de 20% da renda',
+    emoji: '📈',
+    unlocked: false,
+    category: 'savings',
+    xp: 200,
+    requirement: 'Poupar 20%+ da renda',
+  },
+  {
+    id: 'five_categories',
+    title: 'Organizado',
+    description: 'Use 5 categorias diferentes',
+    emoji: '🗂️',
+    unlocked: false,
+    category: 'control',
+    xp: 100,
+    requirement: '5+ categorias no mês',
+  },
+  {
+    id: 'score_500',
+    title: 'Meio Caminho',
+    description: 'Atinja score financeiro 500',
+    emoji: '⚡',
+    unlocked: false,
+    category: 'goals',
+    xp: 300,
+    requirement: 'Score 500+',
+  },
+  {
+    id: 'score_800',
+    title: 'Alto Desempenho',
+    description: 'Atinja score financeiro 800',
+    emoji: '🏆',
+    unlocked: false,
+    category: 'goals',
+    xp: 500,
+    requirement: 'Score 800+',
+  },
+  {
+    id: 'no_overspend',
+    title: 'Controlado',
+    description: 'Gaste menos do que ganhou',
+    emoji: '🛡️',
+    unlocked: false,
+    category: 'control',
+    xp: 150,
+    requirement: 'Despesas < Receitas',
+  },
+  {
+    id: 'income_recorded',
+    title: 'Renda Registrada',
+    description: 'Registre uma fonte de renda',
+    emoji: '💵',
+    unlocked: false,
+    category: 'consistency',
+    xp: 75,
+    requirement: '1 receita registrada',
+  },
+  {
+    id: 'three_months',
+    title: 'Consistente',
+    description: 'Registre transações por 3 meses',
+    emoji: '📅',
+    unlocked: false,
+    category: 'consistency',
+    xp: 350,
+    requirement: 'Ativo por 3 meses',
+  },
+  {
+    id: 'wealth_builder',
+    title: 'Construtor de Patrimônio',
+    description: 'Acumule saldo positivo crescente',
+    emoji: '🏗️',
+    unlocked: false,
+    category: 'investment',
+    xp: 400,
+    requirement: 'Evolução patrimonial positiva',
+  },
+]
+
+export const INCOME_DISTRIBUTION_CONFIG = [
+  {
+    key: 'necessidades',
+    label: 'Necessidades',
+    recommended: 50,
+    color: '#ef4444',
+    categories: ['Alimentação', 'Moradia', 'Transporte', 'Saúde'],
+  },
+  {
+    key: 'investimentos',
+    label: 'Investimentos',
+    recommended: 20,
+    color: '#8b5cf6',
+    categories: ['Investimentos'],
+  },
+  {
+    key: 'reserva',
+    label: 'Reserva',
+    recommended: 10,
+    color: '#22c55e',
+    categories: [],
+  },
+  {
+    key: 'lazer',
+    label: 'Lazer',
+    recommended: 10,
+    color: '#f59e0b',
+    categories: ['Lazer', 'Vestuário', 'Assinaturas'],
+  },
+  {
+    key: 'metas',
+    label: 'Metas',
+    recommended: 10,
+    color: '#06b6d4',
+    categories: ['Educação', 'Serviços', 'Outros'],
+  },
+]
+
+export const GOAL_EMOJIS: Record<string, string> = {
+  viagem: '✈️',
+  casa: '🏠',
+  carro: '🚗',
+  emergencia: '🛡️',
+  aposentadoria: '🌴',
+  dividas: '💳',
+  outro: '🎯',
+}
+
+export const GOAL_COLORS: Record<string, string> = {
+  viagem: '#06b6d4',
+  casa: '#f97316',
+  carro: '#8b5cf6',
+  emergencia: '#22c55e',
+  aposentadoria: '#f59e0b',
+  dividas: '#ef4444',
+  outro: '#94a3b8',
+}

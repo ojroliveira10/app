@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useReducer, useEffect, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import type { Transaction, TransactionFilters, MonthlySummary, CategorySummary } from '@/types'
 import { CATEGORY_COLORS } from '@/lib/constants'
@@ -13,14 +13,36 @@ const DEFAULT_FILTERS: TransactionFilters = {
   year: getCurrentYear(),
 }
 
+type State = {
+  transactions: Transaction[]
+  loading: boolean
+  filters: TransactionFilters
+}
+
+type Action =
+  | { type: 'SET_FILTERS'; filters: Partial<TransactionFilters> }
+  | { type: 'FETCH_DONE'; transactions: Transaction[] }
+
+function reducer(state: State, action: Action): State {
+  switch (action.type) {
+    case 'SET_FILTERS':
+      return { ...state, filters: { ...state.filters, ...action.filters }, loading: true }
+    case 'FETCH_DONE':
+      return { ...state, transactions: action.transactions, loading: false }
+  }
+}
+
 export function useTransactions() {
-  const [transactions, setTransactions] = useState<Transaction[]>([])
-  const [loading, setLoading] = useState(true)
-  const [filters, setFilters] = useState<TransactionFilters>(DEFAULT_FILTERS)
+  const [state, dispatch] = useReducer(reducer, {
+    transactions: [],
+    loading: true,
+    filters: DEFAULT_FILTERS,
+  })
+
+  const { transactions, loading, filters } = state
   const supabase = createClient()
 
   const fetchTransactions = useCallback(async () => {
-    setLoading(true)
     const startDate = `${filters.year}-${filters.month}-01`
     const endDate = new Date(Number(filters.year), Number(filters.month), 0)
       .toISOString()
@@ -33,25 +55,27 @@ export function useTransactions() {
       .lte('date', endDate)
       .order('date', { ascending: false })
 
-    if (filters.type !== 'all') {
-      query = query.eq('type', filters.type)
-    }
-    if (filters.category !== 'all') {
-      query = query.eq('category', filters.category)
-    }
+    if (filters.type !== 'all') query = query.eq('type', filters.type)
+    if (filters.category !== 'all') query = query.eq('category', filters.category)
 
     const { data, error } = await query
-    if (!error && data) setTransactions(data as Transaction[])
-    setLoading(false)
+    dispatch({ type: 'FETCH_DONE', transactions: !error && data ? (data as Transaction[]) : [] })
   }, [filters, supabase])
 
   useEffect(() => {
-    fetchTransactions()
+    void fetchTransactions()
   }, [fetchTransactions])
 
+  const setFilters = (updater: Partial<TransactionFilters> | ((prev: TransactionFilters) => Partial<TransactionFilters>)) => {
+    const next = typeof updater === 'function' ? updater(filters) : updater
+    dispatch({ type: 'SET_FILTERS', filters: next })
+  }
+
   const addTransaction = async (data: Omit<Transaction, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
-    const { error } = await supabase.from('transactions').insert(data)
-    if (!error) fetchTransactions()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { error: new Error('Não autenticado') }
+    const { error } = await supabase.from('transactions').insert({ ...data, user_id: user.id })
+    if (!error) void fetchTransactions()
     return { error }
   }
 
@@ -60,13 +84,13 @@ export function useTransactions() {
       .from('transactions')
       .update({ ...data, updated_at: new Date().toISOString() })
       .eq('id', id)
-    if (!error) fetchTransactions()
+    if (!error) void fetchTransactions()
     return { error }
   }
 
   const deleteTransaction = async (id: string) => {
     const { error } = await supabase.from('transactions').delete().eq('id', id)
-    if (!error) fetchTransactions()
+    if (!error) void fetchTransactions()
     return { error }
   }
 

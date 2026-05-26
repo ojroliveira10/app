@@ -104,6 +104,7 @@ export default function TransactionsPage() {
       />
 
       <TransactionForm
+        key={`${editingTransaction?.id ?? 'new'}-${formOpen}`}
         open={formOpen}
         onClose={handleClose}
         onSubmit={handleSubmit}

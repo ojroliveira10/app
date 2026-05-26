@@ -8,8 +8,9 @@ const geistSans = Geist({
 });
 
 export const metadata: Metadata = {
-  title: "FinançasPessoais",
-  description: "Gerencie suas finanças pessoais com simplicidade",
+  title: "ElevaAI",
+  description: "Suas finanças. Seu futuro.",
+  icons: { icon: "/logo.png" },
 };
 
 export default function RootLayout({
@@ -18,7 +19,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR" className={`${geistSans.variable} h-full antialiased`}>
+    <html lang="pt-BR" className={`${geistSans.variable} h-full antialiased dark`}>
       <body className="min-h-full">{children}</body>
     </html>
   );

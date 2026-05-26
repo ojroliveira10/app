@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -32,34 +32,18 @@ interface TransactionFormProps {
 
 const today = new Date().toISOString().split('T')[0]
 
+// Component is remounted by callers via `key` when transaction/open state changes,
+// so state initializers from props are always fresh.
 export function TransactionForm({ open, onClose, onSubmit, transaction }: TransactionFormProps) {
-  const [type, setType] = useState<TransactionType>('expense')
-  const [amount, setAmount] = useState('')
-  const [date, setDate] = useState(today)
-  const [category, setCategory] = useState('')
-  const [description, setDescription] = useState('')
+  const [type, setType] = useState<TransactionType>(transaction?.type ?? 'expense')
+  const [amount, setAmount] = useState(transaction ? String(transaction.amount) : '')
+  const [date, setDate] = useState(transaction?.date ?? today)
+  const [category, setCategory] = useState(transaction?.category ?? '')
+  const [description, setDescription] = useState(transaction?.description ?? '')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
   const isEditing = !!transaction
-
-  useEffect(() => {
-    if (transaction) {
-      setType(transaction.type)
-      setAmount(String(transaction.amount))
-      setDate(transaction.date)
-      setCategory(transaction.category)
-      setDescription(transaction.description || '')
-    } else {
-      setType('expense')
-      setAmount('')
-      setDate(today)
-      setCategory('')
-      setDescription('')
-    }
-    setError('')
-  }, [transaction, open])
-
   const categories = type === 'income' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES
 
   const handleSubmit = async (e: React.FormEvent) => {

@@ -2,7 +2,7 @@
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { MONTHS } from '@/lib/constants'
-import { getAvailableYears, formatMonthYear } from '@/lib/format'
+import { getAvailableYears } from '@/lib/format'
 import type { TransactionFilters } from '@/types'
 
 interface PeriodSelectorProps {
@@ -12,12 +12,13 @@ interface PeriodSelectorProps {
 
 export function PeriodSelector({ filters, onChange }: PeriodSelectorProps) {
   const years = getAvailableYears()
+  const monthLabel = MONTHS.find((m) => m.value === filters.month)?.label ?? 'Mês'
 
   return (
     <div className="flex items-center gap-2">
       <Select value={filters.month} onValueChange={(month) => { if (month) onChange({ month }) }}>
         <SelectTrigger className="w-36">
-          <SelectValue placeholder="Mês" />
+          <SelectValue>{monthLabel}</SelectValue>
         </SelectTrigger>
         <SelectContent>
           {MONTHS.map((m) => (
@@ -30,7 +31,7 @@ export function PeriodSelector({ filters, onChange }: PeriodSelectorProps) {
 
       <Select value={filters.year} onValueChange={(year) => { if (year) onChange({ year }) }}>
         <SelectTrigger className="w-24">
-          <SelectValue placeholder="Ano" />
+          <SelectValue>{filters.year}</SelectValue>
         </SelectTrigger>
         <SelectContent>
           {years.map((y) => (
